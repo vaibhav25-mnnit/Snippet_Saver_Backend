@@ -1,10 +1,14 @@
 import express from "express";
 import mongoose from "mongoose";
 import bodyParser from 'body-parser'
+import cors from 'cors';
+
 
 /* declearing the app */
 const app = express();
 
+
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
 
@@ -33,13 +37,21 @@ app.get('/', (req, res) => {
 
 /* for particuler topic articles */
 app.get('/topic/:topicId', (req, res) => {
-    console.log(req.params.topicId)
     Topic.findById(req.params.topicId, (err, done) => {
         if (err) res.status(501).send(err);
         else if (done) res.status(200).send(done);
     })
 })
 
+
+app.get('/article/:articleId', (req, res) => {
+    Article.findById(req.params.articleId, (err, found) => {
+        if (err) res.status(501).send(err);
+        else if (found) res.status(200).send(found);
+        else res.status(200).send("NO article found")
+
+    })
+})
 
 
 /* for adding new topic */
@@ -70,14 +82,17 @@ app.post('/addarticle/', (req, res) => {
     const topicId = req.body.topicId;
     const note = req.body.note;
     const code = req.body.code;
-    const problems = req.body.problems;
+    const name = req.body.name;
+    const dificulty = req.body.dificulty;
 
 
     const newArticle = new Article({
         note: note,
         code: code,
-        problems: problems
+        name: name,
+        dificulty: dificulty
     })
+    newArticle.save();
 
     Topic.findById(topicId, (err, done) => {
         if (err) res.status(501).send(err);
@@ -85,7 +100,6 @@ app.post('/addarticle/', (req, res) => {
             done.articles.push(newArticle);
             done.save();
             res.status(200).send(done)
-
         };
     })
 

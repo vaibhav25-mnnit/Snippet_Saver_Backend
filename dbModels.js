@@ -3,10 +3,10 @@ import mongoose from "mongoose";
 const schema = mongoose.Schema;
 
 const articleSchema = new schema({
-
     note: String,
     code: String,
-    problems: [String]
+    name: String,
+    dificulty: String
 });
 
 const Article = mongoose.model('article', articleSchema);
