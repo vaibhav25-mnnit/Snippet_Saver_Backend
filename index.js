@@ -44,14 +44,20 @@ app.get('/topic/:topicId', (req, res) => {
 })
 
 
-app.get('/article/:articleId', (req, res) => {
-    Article.findById(req.params.articleId, (err, found) => {
-        if (err) res.status(501).send(err);
-        else if (found) res.status(200).send(found);
-        else res.status(200).send("NO article found")
+app.get('/article/:articleId/parent/:parentId', (req, res) => {
 
+
+    Topic.findById(req.params.parentId, { articles: { $elemMatch: { _id: req.params.articleId } } }, (err, found) => {
+        if (err) {
+            res.status(501).send(err)
+        } else if (found) {
+            res.status(200).send(found.articles[0]);
+        }
+        else
+            res.status(200).send("NO article found")
     })
 })
+
 
 
 /* for adding new topic */
@@ -92,7 +98,7 @@ app.post('/addarticle/', (req, res) => {
         name: name,
         dificulty: dificulty
     })
-    newArticle.save();
+    // newArticle.save();
 
     Topic.findById(topicId, (err, done) => {
         if (err) res.status(501).send(err);
@@ -104,7 +110,20 @@ app.post('/addarticle/', (req, res) => {
     })
 
 })
+//6205468d7f08cacc14ee2672
+// app.get('/delete/article/:id', (req, res) => {
 
+//     Topic.updateupMany({}, { $pull: { articles: { _id: req.params.id } } }, (err, done) => {
+//         if (err)
+//             res.status(404).send(err)
+//         else if (done)
+//             res.status(200).send("done")
+//         else
+//             res.send(404).send('not found')
+//     })
+
+
+// })
 
 
 /* Listening app */
