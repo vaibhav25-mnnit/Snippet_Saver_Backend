@@ -1,8 +1,8 @@
-import express from "express";
+import express, { response } from "express";
 import mongoose from "mongoose";
 import bodyParser from 'body-parser'
 import cors from 'cors';
-
+import axios from "axios";
 
 /* declearing the app */
 const app = express();
@@ -110,6 +110,7 @@ app.post('/addarticle/', (req, res) => {
     })
 
 })
+
 //6205468d7f08cacc14ee2672
 // app.get('/delete/article/:id', (req, res) => {
 
@@ -124,6 +125,28 @@ app.post('/addarticle/', (req, res) => {
 
 
 // })
+
+
+//run code 
+app.post('/run', (req, res) => {
+    const reqestUrl = 'https://api.jdoodle.com/execute'
+    //req.body.sript  req.body.stdinput
+    const program =
+    {
+        script: req.body.script,
+        language: 'cpp17',
+        versionIndex: '0',
+        clientId: 'f25137c59c048c71809daea0ac48e481',
+        clientSecret: "e1dafa637fd03492ef477c81b737f5c5b3918947d99515b364a0ec1423b8478",
+        stdin: req.body.stdinput
+    }
+
+    axios.post(reqestUrl, program)
+        .then(response => res.status(200).send(response.data))
+        .catch(err => res.status(200).send(err))
+
+})
+
 
 
 /* Listening app */
