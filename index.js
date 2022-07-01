@@ -25,11 +25,15 @@ mongoose.connect(dbURL)
 
 /* get topics  route */
 app.get('/', (req, res) => {
-    Topic.find((err, found) => {
-        if (err) res.send(err)
-        else if (found) {
-            res.send(found);
-        }
+    res.send("Hello from server");
+})
+
+/* finding the topic's of certain user */
+
+app.get('/user/:user',(req,res)=>{
+    Topic.find( {user:req.params.user},(err,done)=>{
+        if(err) res.send(err);
+        else if(done) res.status(200).send(done);
     })
 })
 
@@ -44,6 +48,9 @@ app.get('/topic/:topicId', (req, res) => {
 })
 
 
+
+
+/*finding the particular*/
 app.get('/article/:articleId/parent/:parentId', (req, res) => {
 
 
@@ -53,23 +60,21 @@ app.get('/article/:articleId/parent/:parentId', (req, res) => {
         } else if (found) {
             res.status(200).send(found.articles[0]);
         }
+
         else
             res.status(200).send("NO article found")
     })
 })
 
 
-
 /* for adding new topic */
 app.post('/addtopic/', (req, res) => {
-
-    const imgURL = req.body.imgUrl;
-    const name = req.body.name;
-
+    const name = req.body.name
+    const user = req.body.user
 
     const newTopic = new Topic({
         name: name,
-        imgAddress: imgURL,
+        user: user,
         articles: []
     })
 
@@ -81,22 +86,31 @@ app.post('/addtopic/', (req, res) => {
 })
 
 
+/* delete the topic */
+app.get('/deleteTopic/:id/',(req,res)=>{
+    console.log(req.params.id);
+    Topic.deleteOne({_id:req.params.id},(err,done)=>{
+        if(err) res.send(err);
+        else if(done) res.status(200).send("Deleted successfully");
+    })
+
+
+})
+
+
+
 /* for adding new article */
 app.post('/addarticle/', (req, res) => {
 
-    // console.log(req.body);
-    const topicId = req.body.topicId;
-    const note = req.body.note;
-    const code = req.body.code;
-    const name = req.body.name;
-    const dificulty = req.body.dificulty;
-
+   
+    const topicId = req.body.topicId
 
     const newArticle = new Article({
-        note: note,
-        code: code,
-        name: name,
-        dificulty: dificulty
+        note: req.body.note,
+        code: req.body.code,
+        title: req.body.title,
+        dificulty: req.body.dificulty,
+        language : req.body.language
     })
     // newArticle.save();
 
@@ -112,29 +126,42 @@ app.post('/addarticle/', (req, res) => {
 })
 
 //6205468d7f08cacc14ee2672
-// app.get('/delete/article/:id', (req, res) => {
-
-//     Topic.updateupMany({}, { $pull: { articles: { _id: req.params.id } } }, (err, done) => {
-//         if (err)
-//             res.status(404).send(err)
-//         else if (done)
-//             res.status(200).send("done")
-//         else
-//             res.send(404).send('not found')
-//     })
+app.get('/delete/article/:id/:parent', (req, res) => {
 
 
-// })
+    Topic.updateOne({_id:req.params.parent}, { $pull: { articles: { _id: req.params.id } } }, (err, done) => {
+        if (err)
+            res.status(404).send(err)
+        else if (done)
+            res.status(200).send("deleted")
+        else
+            res.send(404).send('not found')
+    })
+
+
+})
 
 
 //run code 
 app.post('/run', (req, res) => {
     const reqestUrl = 'https://api.jdoodle.com/execute'
-    //req.body.sript  req.body.stdinput
+const lang = req.body.language;
+  let language;
+
+  if(lang=='cpp'){
+    language = 'cpp17';
+  }else if(lang == 'java'){
+    language = 'java';
+  }else if(lang == 'javascript'){
+    language = 'nodejs';
+  }else if(lang == 'python'){
+    language = 'python3';
+  }
+
     const program =
     {
         script: req.body.script,
-        language: 'cpp17',
+        language: language,
         versionIndex: '0',
         clientId: 'f25137c59c048c71809daea0ac48e481',
         clientSecret: "e1dafa637fd03492ef477c81b737f5c5b3918947d99515b364a0ec1423b8478",
@@ -148,8 +175,8 @@ app.post('/run', (req, res) => {
 })
 
 
-
 /* Listening app */
-app.listen(process.env.PORT || 80, () => {
+app.listen(process.env.PORT || 8080, () => {
     console.log("Started .....")
 })
+
