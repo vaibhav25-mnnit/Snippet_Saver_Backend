@@ -25,16 +25,22 @@ mongoose.connect(dbURL)
 
 /* get topics  route */
 app.get('/', (req, res) => {
-    res.send("Hello from server");
+    res.send("Hello from😁");
 })
 
 /* finding the topic's of certain user */
-
-app.get('/user/:user',(req,res)=>{
-    Topic.find( {user:req.params.user},(err,done)=>{
-        if(err) res.send(err);
-        else if(done) res.status(200).send(done);
+app.get('/user/:user', (req, res) => {
+    Topic.find({ user: req.params.user }, (err, done) => {
+        if (err) res.send(err);
+        else if (done) res.status(200).send(done);
     })
+
+    // console.log(req.params.user)
+    // Topic.find({user:'+919325763684'}, (err, done) => {
+    //     if (err) res.send(err);
+    //     else if (done) res.status(200).send(done);
+    // 
+    // })
 })
 
 
@@ -87,11 +93,11 @@ app.post('/addtopic/', (req, res) => {
 
 
 /* delete the topic */
-app.get('/deleteTopic/:id/',(req,res)=>{
+app.get('/deleteTopic/:id/', (req, res) => {
     console.log(req.params.id);
-    Topic.deleteOne({_id:req.params.id},(err,done)=>{
-        if(err) res.send(err);
-        else if(done) res.status(200).send("Deleted successfully");
+    Topic.deleteOne({ _id: req.params.id }, (err, done) => {
+        if (err) res.send(err);
+        else if (done) res.status(200).send("Deleted successfully");
     })
 
 
@@ -102,7 +108,7 @@ app.get('/deleteTopic/:id/',(req,res)=>{
 /* for adding new article */
 app.post('/addarticle/', (req, res) => {
 
-   
+
     const topicId = req.body.topicId
 
     const newArticle = new Article({
@@ -110,7 +116,7 @@ app.post('/addarticle/', (req, res) => {
         code: req.body.code,
         title: req.body.title,
         dificulty: req.body.dificulty,
-        language : req.body.language
+        language: req.body.language
     })
     // newArticle.save();
 
@@ -129,7 +135,7 @@ app.post('/addarticle/', (req, res) => {
 app.get('/delete/article/:id/:parent', (req, res) => {
 
 
-    Topic.updateOne({_id:req.params.parent}, { $pull: { articles: { _id: req.params.id } } }, (err, done) => {
+    Topic.updateOne({ _id: req.params.parent }, { $pull: { articles: { _id: req.params.id } } }, (err, done) => {
         if (err)
             res.status(404).send(err)
         else if (done)
@@ -145,18 +151,18 @@ app.get('/delete/article/:id/:parent', (req, res) => {
 //run code 
 app.post('/run', (req, res) => {
     const reqestUrl = 'https://api.jdoodle.com/execute'
-const lang = req.body.language;
-  let language;
+    const lang = req.body.language;
+    let language;
 
-  if(lang=='cpp'){
-    language = 'cpp17';
-  }else if(lang == 'java'){
-    language = 'java';
-  }else if(lang == 'javascript'){
-    language = 'nodejs';
-  }else if(lang == 'python'){
-    language = 'python3';
-  }
+    if (lang == 'cpp') {
+        language = 'cpp17';
+    } else if (lang == 'java') {
+        language = 'java';
+    } else if (lang == 'javascript') {
+        language = 'nodejs';
+    } else if (lang == 'python') {
+        language = 'python3';
+    }
 
     const program =
     {
