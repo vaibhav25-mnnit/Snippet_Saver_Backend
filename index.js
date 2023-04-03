@@ -3,6 +3,9 @@ import mongoose from "mongoose";
 import bodyParser from 'body-parser'
 import cors from 'cors';
 import axios from "axios";
+import dotenv from "dotenv";
+
+dotenv.config()
 
 /* declearing the app */
 const app = express();
@@ -13,10 +16,12 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
 
 
+
+
 import { Topic, Article } from "./dbModels.js"
 
 /* connecting to database */
-const dbURL = `mongodb+srv://vaibhav_55:pbxRUqtxfowCohE9@webster.aakb9.mongodb.net/DsAlgoDb?retryWrites=true&w=majority`
+const dbURL = process.env.DB_URL
 
 mongoose.connect(dbURL)
     .then(console.log("connected to database..."))
@@ -25,7 +30,7 @@ mongoose.connect(dbURL)
 
 /* get topics  route */
 app.get('/', (req, res) => {
-    res.send("Hello from😁");
+    res.send("Hello from server😁");
 })
 
 /* finding the topic's of certain user */
@@ -35,12 +40,6 @@ app.get('/user/:user', (req, res) => {
         else if (done) res.status(200).send(done);
     })
 
-    // console.log(req.params.user)
-    // Topic.find({user:'+919325763684'}, (err, done) => {
-    //     if (err) res.send(err);
-    //     else if (done) res.status(200).send(done);
-    // 
-    // })
 })
 
 
@@ -94,7 +93,6 @@ app.post('/addtopic/', (req, res) => {
 
 /* delete the topic */
 app.get('/deleteTopic/:id/', (req, res) => {
-    console.log(req.params.id);
     Topic.deleteOne({ _id: req.params.id }, (err, done) => {
         if (err) res.send(err);
         else if (done) res.status(200).send("Deleted successfully");
@@ -150,7 +148,7 @@ app.get('/delete/article/:id/:parent', (req, res) => {
 
 //run code 
 app.post('/run', (req, res) => {
-    const reqestUrl = 'https://api.jdoodle.com/execute'
+    const reqestUrl = process.env.REQUEST_URL;
     const lang = req.body.language;
     let language;
 
@@ -169,8 +167,8 @@ app.post('/run', (req, res) => {
         script: req.body.script,
         language: language,
         versionIndex: '0',
-        clientId: 'f25137c59c048c71809daea0ac48e481',
-        clientSecret: "e1dafa637fd03492ef477c81b737f5c5b3918947d99515b364a0ec1423b8478",
+        clientId: process.env.CLIENT_ID,
+        clientSecret: process.env.CLIENT_SECRET,
         stdin: req.body.stdinput
     }
 
