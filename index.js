@@ -129,7 +129,7 @@ app.post('/addarticle/', (req, res) => {
 
 })
 
-//6205468d7f08cacc14ee2672
+//to get exact article through parent
 app.get('/delete/article/:id/:parent', (req, res) => {
 
 
@@ -144,6 +144,23 @@ app.get('/delete/article/:id/:parent', (req, res) => {
 
 
 })
+
+//route to be added in future to edit the article
+app.get('/edit/:id',(req,res)=>{
+	
+	res.send('working on it');
+	
+})
+
+
+
+
+
+
+
+
+
+
 
 
 //run code 
